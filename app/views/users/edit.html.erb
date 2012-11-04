@@ -1,0 +1,13 @@
+<h1>ユーザの編集</h1>
+
+<%= form_for(@user, :url=>user_path) do |f| %>
+  <% @user.errors.full_messages.each do |msg| %>
+      <p><%= msg %></p>
+   <% end %>
+  <%= render :partial => "form", :locals=>{:f=>f} %>
+  <p>
+    <%= f.submit '更新' %>
+  </p>
+<% end %>
+
+<%= link_to 'トップ', user_path %>

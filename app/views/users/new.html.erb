@@ -1,0 +1,11 @@
+<h1>ユーザの作成</h1>
+
+<%= form_for(@user, :url=>users_path) do |f| %>
+  <% @user.errors.full_messages.each do |msg| %>
+      <p><%= msg %></p>
+   <% end %>
+  <%= render :partial => "form", :locals=>{:f=>f} %>
+  <p>
+    <%= f.submit '作成' %>
+  </p>
+<% end %>
