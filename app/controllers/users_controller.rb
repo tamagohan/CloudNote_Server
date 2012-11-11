@@ -34,11 +34,4 @@ class UsersController < ApplicationController
       render :action => "edit"
     end
   end
-
-  def destroy
-    @user = @current_user
-    @user.destroy
-    flash[:notice] = 'ユーザを削除しました。'
-    redirect_to(new_user_url)
-  end
 end
