@@ -1,7 +1,18 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 general:
+  id: 1
   login: general
+  password_salt: <%= salt = Authlogic::Random.hex_token %>
+  crypted_password: <%= Authlogic::CryptoProviders::Sha512.encrypt("benrocks", salt) %>
+  persistence_token: <%= Authlogic::Random.hex_token %>
+  login_count: 1
+  current_login_at: 2012-11-04 11:06:36
+  last_login_at: 2012-11-04 11:06:36
+
+other:
+  id: 2
+  login: other
   password_salt: <%= salt = Authlogic::Random.hex_token %>
   crypted_password: <%= Authlogic::CryptoProviders::Sha512.encrypt("benrocks", salt) %>
   persistence_token: <%= Authlogic::Random.hex_token %>

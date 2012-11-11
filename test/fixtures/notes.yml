@@ -1,0 +1,16 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+general_000:
+  user_id: 1
+  title: 'general_000_title'
+  body: 'general_000_body'
+
+general_001:
+  user_id: 1
+  title: 'general_001_title'
+  body: 'general_001_body'
+
+other_000:
+  user_id: 2
+  title: 'other_000_title'
+  body: 'other_000_body'

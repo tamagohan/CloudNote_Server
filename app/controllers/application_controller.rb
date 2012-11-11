@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user_session, :current_user
 
+  rescue_from StandardError do |e|
+    render_exception(e)
+  end
+
   private
 
   #################### Authlogic
@@ -44,4 +48,24 @@ class ApplicationController < ActionController::Base
     end
   end
   #################### Authlogic
+
+
+
+  #################### Custom Error
+  class UnauthorizedAccess < StandardError
+  end
+
+  def render_exception(e)
+    Rails.logger.info("#{e.class.name} raised. #{e.message}")
+    p "#{e.class.name} raised. #{e.message}"
+    case e
+    when UnauthorizedAccess           then status = :forbidden
+    when ActiveRecord::RecordNotFound then status = :not_found
+    else
+      status = :service_unavailable
+    end
+    render json: {error_message: e.message} , status: status
+    return false
+  end
+  #################### Custom Error
 end
