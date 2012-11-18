@@ -5,7 +5,6 @@ gem "authlogic", :git => "git://github.com/odorcicd/authlogic.git", :branch => "
 
 gem 'sqlite3'
 
-
 group :assets do
   gem 'sass-rails',   '~> 3.1.4'
   gem 'coffee-rails', '~> 3.1.1'

@@ -10,6 +10,27 @@ class ApplicationController < ActionController::Base
 
   private
 
+  #################### Custom Error
+  class UnauthorizedAccess < StandardError
+  end
+
+  def render_exception(e)
+    Rails.logger.info("#{e.class.name} raised. #{e.message}")
+    case e
+    when UnauthorizedAccess           then status = :forbidden
+    when ActiveRecord::RecordNotFound then status = :not_found
+    when ActiveRecord::RecordInvalid  then status = :bad_request
+    else
+      status = :service_unavailable
+    end
+
+    render json: {error_message: e.message} , status: status
+    return false
+  end
+  #################### Custom Error
+
+
+
   #################### Authlogic
   def current_user_session
     return @current_user_session if defined?(@current_user_session)
@@ -48,24 +69,4 @@ class ApplicationController < ActionController::Base
     end
   end
   #################### Authlogic
-
-
-
-  #################### Custom Error
-  class UnauthorizedAccess < StandardError
-  end
-
-  def render_exception(e)
-    Rails.logger.info("#{e.class.name} raised. #{e.message}")
-    p "#{e.class.name} raised. #{e.message}"
-    case e
-    when UnauthorizedAccess           then status = :forbidden
-    when ActiveRecord::RecordNotFound then status = :not_found
-    else
-      status = :service_unavailable
-    end
-    render json: {error_message: e.message} , status: status
-    return false
-  end
-  #################### Custom Error
 end

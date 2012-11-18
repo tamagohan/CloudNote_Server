@@ -8,6 +8,8 @@ class NotesControllerTest < ActionController::TestCase
     activate_authlogic
   end
 
+
+  #################### Index
   test "should get index" do
     assert UserSession.create(@user)
     get :index
@@ -19,42 +21,108 @@ class NotesControllerTest < ActionController::TestCase
       assert_note_response(note, item)
     end
   end
+  #################### Index
 
-  test "should create note" do
-    assert_difference('Note.count') do
-      post :create, note: @note.attributes
-    end
 
-    assert_redirected_to note_path(assigns(:note))
+
+  #################### Show
+  test "should showr" do
+    assert UserSession.create(@user)
+    get :show, id: @note.id.to_s
+    assert_response :success
+    json_obj = JSON.parse(@response.body)
+    assert_note_response(@note, json_obj)
   end
 
   test "should NOT show note by not owner" do
     assert UserSession.create(@user)
     get :show, id: @others_note.id.to_s
-    p @response.status
     assert_response 403
     json_obj = JSON.parse(@response.body)
-    p json_obj
+    assert_equal I18n.t('error.unauthorized_access'), json_obj['error_message']
+  end
+  #################### Show
+
+
+
+  #################### Create
+  test "should create note" do
+    assert UserSession.create(@user)
+    assert_difference('Note.count') do
+      assert_difference('@user.notes.count') do
+        post :create, note: {title: "sample-title", body: "sample-body"}
+      end
+    end
+    assert_response :success
+    json_obj = JSON.parse(@response.body)
+    assert_equal "sample-title", json_obj["title"]
+    assert_equal "sample-body",  json_obj["body"]
+  end
+
+  test "should NOT create note bacause title is too long" do
+    assert UserSession.create(@user)
+    assert_no_difference('Note.count') do
+      assert_no_difference('@user.notes.count') do
+        post :create, note: {title: 'a'*256, body: "sample-body"}
+      end
+    end
+    assert_response :bad_request
+    json_obj = JSON.parse(@response.body)
+    err_msg = I18n.t('errors.messages.record_invalid', errors: nil) +
+              I18n.t('activerecord.attributes.note.title') +
+              I18n.t('errors.messages.too_long', count: 255)
+    assert_equal err_msg, json_obj['error_message']
+  end
+  #################### Create
+
+
+
+  #################### Update
+  test "should update note" do
+    assert UserSession.create(@user)
+    put :update, id: @note.id.to_s, note: { body: "sample-body" }
+    assert_equal "sample-body", @note.reload.body
+    json_obj = JSON.parse(@response.body)
     assert_note_response(@note, json_obj)
   end
 
-  test "should update note" do
-    put :update, id: @note.to_param, note: @note.attributes
-    assert_redirected_to note_path(assigns(:note))
+  test "should NOT update note because title is too long" do
+    assert UserSession.create(@user)
+    before_title = @note.title
+    put :update, id: @note.id.to_s, note: { title: 'a'*256 }
+
+    assert_response :bad_request
+    json_obj = JSON.parse(@response.body)
+    err_msg = I18n.t('errors.messages.record_invalid', errors: nil) +
+              I18n.t('activerecord.attributes.note.title') +
+              I18n.t('errors.messages.too_long', count: 255)
+    assert_equal err_msg, json_obj['error_message']
+    assert_equal before_title, @note.reload.title
   end
 
-  test "should destroy note" do
-    assert_difference('Note.count', -1) do
-      delete :destroy, id: @note.to_param
-    end
-
-    assert_redirected_to notes_path
+  test "should NOT update note by not owner" do
+    assert UserSession.create(@user)
+    before_title = @others_note.title
+    put :update, id: @others_note.id.to_s, note: { title: 'a'*256 }
+    assert_response :forbidden
+    json_obj = JSON.parse(@response.body)
+    assert_equal I18n.t('error.unauthorized_access'), json_obj['error_message']
+    assert_equal before_title, @others_note.reload.title
   end
+  #################### Update
 
+
+  #################### Test Methods
   def assert_note_response(note, hash)
     hash.symbolize_keys!
-    Note.column_names.each do |col|
-      assert_equal note.__send__(col.to_sym), hash[col.to_sym]
+    [:id, :title, :body, :created_at, :updated_at].each do |col|
+      if col == :created_at || col == :updated_at
+        assert_equal note.__send__(col).to_s, Time.zone.parse(hash[col]).to_s,
+                     "fail on #{col}"
+      else
+        assert_equal note.__send__(col), hash[col], "fail on #{col}"
+      end
     end
   end
+  #################### Test Methods
 end

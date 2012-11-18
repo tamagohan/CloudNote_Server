@@ -5,59 +5,28 @@ class NotesController < ApplicationController
   # GET /notes.json
   def index
     @notes = current_user.notes
-    render json: @notes
+    render json: @notes.map{|note| note.to_hash }
   end
 
-  # GET /notes/1
   # GET /notes/1.json
   def show
     @note = Note.find(params[:id])
-    render json: @note
+    render json: @note.to_hash
   end
 
-  # POST /notes
   # POST /notes.json
   def create
-    @note = Note.new(params[:note])
-
-    respond_to do |format|
-      if @note.save
-        format.html { redirect_to @note, notice: 'Note was successfully created.' }
-        format.json { render json: @note, status: :created, location: @note }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @note.errors, status: :unprocessable_entity }
-      end
-    end
+    @note = Note.create!(params[:note].merge(user_id: current_user.id))
+    render json: @note.to_hash
   end
 
-  # PUT /notes/1
   # PUT /notes/1.json
   def update
     @note = Note.find(params[:id])
-
-    respond_to do |format|
-      if @note.update_attributes(params[:note])
-        format.html { redirect_to @note, notice: 'Note was successfully updated.' }
-        format.json { head :ok }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @note.errors, status: :unprocessable_entity }
-      end
-    end
+    @note.update_attributes!(params[:note])
+    render json: @note.to_hash
   end
 
-  # DELETE /notes/1
-  # DELETE /notes/1.json
-  def destroy
-    @note = Note.find(params[:id])
-    @note.destroy
-
-    respond_to do |format|
-      format.html { redirect_to notes_url }
-      format.json { head :ok }
-    end
-  end
 
   #################### Filter
   def require_owner
