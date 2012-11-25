@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class UserSessionsController < ApplicationController
   before_filter :require_user, :only => :destroy
+  skip_before_filter :verify_authenticity_token
 
   def new
    if current_user_session
@@ -12,6 +13,7 @@ class UserSessionsController < ApplicationController
   # ログイン
   def create
     reset_session
+    params.delete(:authenticity_token)
     @user_session = UserSession.new(params[:user_session])
     if @user_session.save
       flash[:notice] = "ログインしました。"
@@ -20,6 +22,16 @@ class UserSessionsController < ApplicationController
       flash[:notice] = "ログインに失敗しました。"
       render :action => :new
     end
+  end
+
+  def create_api
+    reset_session
+    @user_session = UserSession.new(params)
+    @user_session.save!
+    render json: {}
+  rescue => e
+    Rails.logger.info("#{e.class.name} raised. #{e.message}")
+    raise UnauthorizedAccess
   end
 
   # ログアウト

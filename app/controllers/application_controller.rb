@@ -15,7 +15,6 @@ class ApplicationController < ActionController::Base
   end
 
   def render_exception(e)
-    Rails.logger.info("#{e.class.name} raised. #{e.message}")
     case e
     when UnauthorizedAccess           then status = :forbidden
     when ActiveRecord::RecordNotFound then status = :not_found
@@ -23,8 +22,9 @@ class ApplicationController < ActionController::Base
     else
       status = :service_unavailable
     end
-
     render json: {error_message: e.message} , status: status
+    Rails.logger.info("#{e.class.name} raised. #{e.message}")
+    Rails.logger.info("error_message is #{e.message}")
     return false
   end
   #################### Custom Error
