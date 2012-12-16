@@ -5,6 +5,9 @@ class NotesController < ApplicationController
   # GET /notes.json
   def index
     @notes = current_user.notes
+      .paginate( page:     params[:page],
+                 per_page: 5,
+                 order:    "created_at DESC")
     render json: @notes.map{|note| note.to_hash }
   end
 
