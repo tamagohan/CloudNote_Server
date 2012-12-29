@@ -1,6 +1,8 @@
 class NotesController < ApplicationController
+  skip_before_filter :verify_authenticity_token
   before_filter :require_user
   before_filter :require_owner, except: [:index, :new, :create]
+
 
   # GET /notes.json
   def index
@@ -19,14 +21,14 @@ class NotesController < ApplicationController
 
   # POST /notes.json
   def create
-    @note = Note.create!(params[:note].merge(user_id: current_user.id))
+    @note = Note.create!(title: params[:title], body: params[:body], user_id: current_user.id)
     render json: @note.to_hash
   end
 
   # PUT /notes/1.json
   def update
     @note = Note.find(params[:id])
-    @note.update_attributes!(params[:note])
+    @note.update_attributes!(title: params[:title], body: params[:body])
     render json: @note.to_hash
   end
 
