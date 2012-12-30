@@ -1,3 +1,7 @@
+<head>
+<pre class="brush:xml"><meta name="viewport" content="width=device-width">
+</head>
+
 <h1>Hello, <%=h @user.login %>!</h1>
 
 <p>
@@ -7,6 +11,6 @@
   <% end -%>
 </p>
 
-<%= link_to '編集', edit_user_path %> |
-<%= link_to '削除', user_path, :method => :delete %> |
+<p>アプリからログインすることができます。</p>
+
 <%= link_to 'ログアウト', user_session_path, :method => :delete %>

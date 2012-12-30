@@ -9,7 +9,7 @@ class NotesController < ApplicationController
     @notes = current_user.notes
       .paginate( page:     params[:page],
                  per_page: 5,
-                 order:    "created_at DESC")
+                 order:    "updated_at DESC")
     render json: @notes.map{|note| note.to_hash }
   end
 
