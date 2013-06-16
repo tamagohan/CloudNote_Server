@@ -17,6 +17,7 @@ class UserSessionsController < ApplicationController
     @user_session = UserSession.new(params[:user_session])
     if @user_session.save
       flash[:notice] = "ログインしました。"
+      TD.event.post('login', { id: current_user.id })
       redirect_back_or_default user_url(current_user)
     else
       flash[:notice] = "ログインに失敗しました。"

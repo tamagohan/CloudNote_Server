@@ -5,6 +5,7 @@ gem "authlogic", :git => "git://github.com/odorcicd/authlogic.git", :branch => "
 
 gem 'will_paginate'
 gem 'pg'
+gem 'td', "~> 0.10.22"
 
 group :assets do
   gem 'sass-rails',   '~> 3.1.4'
