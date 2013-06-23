@@ -2,9 +2,7 @@ namespace :action_log_summary do
   desc 'daily_login_summary'
   task :daily_login_summary, 'date'
   task :daily_login_summary => :environment do |x, args|
-    date = (args.date.nil? ? Time.zone.now : Time.zone.parse(args.date)).beginning_of_day
-    p date
-    p LoginSummary::Status::SUCCESSED
+    date = (args.date.nil? ? Time.zone.now.yesterday : Time.zone.parse(args.date)).beginning_of_day
     job = LoginSummary.create_summary_job(date, :daily)
     LoginSummary.wait_job_finished(job)
 
@@ -19,6 +17,5 @@ namespace :action_log_summary do
     else
       summary.update_attributes!(params)
     end
-    p job.result
   end
 end
