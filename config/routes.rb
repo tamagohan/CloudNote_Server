@@ -8,4 +8,5 @@ CloudNoteServer::Application.routes.draw do
       post :create_api
     end
   end
+  resources :login_summaries, only: [:index]
 end
