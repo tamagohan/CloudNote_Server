@@ -11,7 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121111022304) do
+ActiveRecord::Schema.define(:version => 20130622021618) do
+
+  create_table "login_summaries", :force => true do |t|
+    t.datetime "date",       :null => false
+    t.integer  "count"
+    t.integer  "scope",      :null => false
+    t.integer  "status",     :null => false
+    t.integer  "job_id"
+    t.integer  "client_id",  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "notes", :force => true do |t|
     t.integer  "user_id",    :null => false
